@@ -57,8 +57,8 @@ This redirects the pin to BCM24, although you can use any other unused pin.
 The board offers 2x high side switched 12V outputs, rated at 1A per channel. These are perfect for driving small loads such as relays, fans or LED interior lighting. A HIGH GPIO will result in a HIGH output. 
 
 **GPIO Layout:**
-- OUT_1: **BCM22**
-- OUT_2: **BCM27**
+- OUT_0: **BCM27**
+- OUT_1: **BCM22** #Comment: I found these BCM pins were swapped on my board. You'll probably want to update the png file to stay consistent.
 
 # CAN Bus Interface:
 The CarPiHat provides a transparent CAN bus interface, presented in Linux simply as a network interface. A MCP2515 offers the SPI to CAN conversion, whilst an MCP2558 handles the bus transmission. 
@@ -97,6 +97,11 @@ Enable I2C Through
 Add the following to "/etc/rc.local"
 >echo ds1307 0x68 > /sys/class/i2c-adapter/i2c-1/new_device
 >hwclock -s
+
+# This is what worked on my install:
+echo 'ds1307 0x68' | sudo tee /sys/class/i2c-adapter/i2c-1/new_device
+sudo hwclock -s
+
 
 Then, add the following to "/etc/modules"
 >rtc-ds1307
@@ -141,9 +146,9 @@ while 1:
 ```
 Save this script to "/home/pi/carPiHat.py"
 
-Then add the following to "/etc/rc.local"
+Then add the following to "/etc/rc.local" # On my fresh install of OAP 12, it seemed rc.local was not running at boot. I had to follow some instructions online to get this to work: https://www.linuxbabe.com/linux-server/how-to-enable-etcrc-local-with-systemd
 >python /home/pi/carPiHat.py &
-
+# Is that ampersand supposed to be there? ^
 This will start the script when the Pi boots.
 
 Next, add the following to "/boot/config.txt"
